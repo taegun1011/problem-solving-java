@@ -12,17 +12,12 @@ public class Main {
 	static ArrayList<Integer>[] map;
 	static int[] height;
 
-	public static int DFS(int cur, int h, boolean[] visited) {
-		visited[cur] = true;
-		int ret = h;
+	public static int DFS(int cur, boolean[] visited) {
+		//위로 올라간다
 
-		for (int nxt : map[cur]) {
-			if (visited[nxt])
-				continue;
-			ret = (height[nxt] > 1) ? Integer.max(height[nxt] + 1, ret) : DFS(nxt, h + 1, visited);
-		}
-
-		return ret;
+		/* if(이미 계산돼있으면)
+			height[nxt] += DFS(...)
+		 */
 	}
 
 	public static void main(String[] args) throws IOException {
