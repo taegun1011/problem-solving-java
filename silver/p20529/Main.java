@@ -3,7 +3,6 @@ package silver.p20529;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Map;
 import java.util.StringTokenizer;
 
 public class Main {
@@ -23,6 +22,24 @@ public class Main {
 		return get2MbtiDiff(a, b) + get2MbtiDiff(b, c) + get2MbtiDiff(c, a);
 	}
 
+	public static String intToMbti(int n) {
+		String mbti = "";
+		mbti += (n & 8) != 0 ? "I" : "E";
+		mbti += (n & 4) != 0 ? "N" : "S";
+		mbti += (n & 2) != 0 ? "F" : "T";
+		mbti += (n & 1) != 0 ? "P" : "J";
+		return mbti;
+	}
+
+	public static int mbtiToInt(String mbti) {
+		int ret = 0;
+		ret += (mbti.charAt(0) == 'I') ? 8 : 0;
+		ret += (mbti.charAt(1) == 'N') ? 4 : 0;
+		ret += (mbti.charAt(2) == 'F') ? 2 : 0;
+		ret += (mbti.charAt(3) == 'P') ? 1 : 0;
+		return ret;
+	}
+
 	public static void solve() throws IOException {
 		int N = Integer.parseInt(br.readLine());
 		String[] arr = new String[N];
@@ -32,18 +49,14 @@ public class Main {
 			arr[i] = st.nextToken();
 		}
 
-		Map<Character, Integer> map = Map.of('I', 8, 'N', 4, 'F', 2, 'P', 1);
 		int[] visited = new int[16];
 
 		for (int i = 0; i < N; i++) {
-			int idx = 0;
-			for (int j = 0; j < 4; j++) {
-				idx += map.containsKey(arr[i].charAt(j)) ? map.get(arr[i].charAt(j)) : 0;
-			}
+			int idx = mbtiToInt(arr[i]);
 			visited[idx]++;
 		}
 
-		int max = 0;
+		int min = 32;
 		for (int i = 0; i < 16; i++) {
 			for (int j = 0; j < 16; j++) {
 				for (int k = 0; k < 16; k++) {
@@ -53,13 +66,13 @@ public class Main {
 						continue;
 					if (i == j && j == k && visited[i] < 3)
 						continue;
-					System.out.println(arr[i] + arr[j] + arr[k]);
-					int result = get3MbtiDiff(arr[i], arr[j], arr[k]);
-					max = max > result ? max : result;
+
+					int result = get3MbtiDiff(intToMbti(i), intToMbti(j), intToMbti(k));
+					min = min < result ? min : result;
 				}
 			}
 		}
-		System.out.println(max);
+		System.out.println(min);
 	}
 
 	public static void main(String[] args) throws IOException {
