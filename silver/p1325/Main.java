@@ -10,14 +10,22 @@ import java.util.StringTokenizer;
 public class Main {
 	static int N, M;
 	static ArrayList<Integer>[] map;
-	static int[] height;
+	static int[] size;
 
-	public static int DFS(int cur, boolean[] visited) {
-		//위로 올라간다
+	public static void DFS(int cur, boolean[] visited) {
+		visited[cur] = true;
 
-		/* if(이미 계산돼있으면)
-			height[nxt] += DFS(...)
-		 */
+		for (int nxt : map[cur]) {
+			System.out.println(cur + " " + size[cur] + " " + nxt + " " + size[nxt]);
+			if (size[nxt] > size[cur])
+				continue;
+			else
+				size[nxt] = size[cur] + 1;
+
+			if (!visited[nxt]) {
+				DFS(nxt, visited);
+			}
+		}
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -37,15 +45,28 @@ public class Main {
 			int u = Integer.parseInt(st.nextToken());
 			int v = Integer.parseInt(st.nextToken());
 
-			// u가 v를 해킹한다 -> v를 해킹하면 u도 해킹할 수 있다
-			map[v].add(u);
+			map[u].add(v);
 		}
 
-		height = new int[N + 1];
-		Arrays.fill(height, 1);
+		size = new int[N + 1];
+		Arrays.fill(size, 1);
 
 		for (int i = 1; i <= N; i++) {
-			height[i] = DFS(i, 1, new boolean[N + 1]);
+			DFS(i, new boolean[N + 1]);
 		}
+
+		int max = 0;
+		StringBuilder sb = new StringBuilder();
+		for (int i = 1; i <= N; i++) {
+			int res = size[i];
+			System.out.println(res);
+			if (max < res) {
+				max = res;
+				sb = new StringBuilder().append(i);
+			} else if (res == max) {
+				sb.append(" " + i);
+			}
+		}
+		System.out.println(sb);
 	}
 }
