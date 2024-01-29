@@ -1,5 +1,3 @@
-package platinum.p26094;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,10 +14,13 @@ public class Main {
 		StringBuilder sb = new StringBuilder();
 
 		int N = Integer.parseInt(st.nextToken());
+		boolean[] visited = new boolean[N + 1];
 
 		Deque<Integer> D = new LinkedList<>();
 		PriorityQueue<Integer> min_pq = new PriorityQueue<>();
-		PriorityQueue<Integer> max_pq = new PriorityQueue<>((o1, o2) -> -Integer.compare(o1, o2));
+		PriorityQueue<Integer> max_pq = new PriorityQueue<>((o1, o2) -> {
+			return -Integer.compare(o1, o2);
+		});
 
 		int Q = Integer.parseInt(st.nextToken());
 
@@ -60,20 +61,32 @@ public class Main {
 
 			// 3 맨 앞이 0 -> 힙에서 선택
 			case 3:
-				p = type ? D.pollFirst() : D.pollLast();
+				p = type ? D.getFirst() : D.getLast();
 				if (p == 0) {
 					PriorityQueue<Integer> pq = type ? min_pq : max_pq;
+					while (!pq.isEmpty() && visited[pq.peek()])
+						pq.poll();
 
-					sb.append(pq.poll()).append('\n');
+					if (pq.isEmpty()) {
+						if (type) {
+							D.pollFirst();
+							sb.append(D.pollFirst()).append('\n');
+						} else {
+							D.pollLast();
+							sb.append(D.pollLast()).append('\n');
+						}
+					} else {
+						visited[pq.peek()] = true;
+						sb.append(pq.poll()).append('\n');
 
-					if (!pq.isEmpty()) {
-						if (type)
-							D.addFirst(0);
-						else
-							D.addLast(0);
 					}
+
 				} else {
 					sb.append(p).append('\n');
+					if (type)
+						D.pollFirst();
+					else
+						D.pollLast();
 				}
 
 			}
