@@ -1,37 +1,34 @@
-package gold.p17298;
+package gold.p2493;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
 public class Main {
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringBuilder sb = new StringBuilder();
-		int N = Integer.parseInt(br.readLine());
 
-		int[] NGE = new int[N], arr = new int[N];
-		Arrays.fill(NGE, -1);
+		int N = Integer.parseInt(br.readLine());
+		int[] arr = new int[N];
+		int[] ans = new int[N];
 
 		StringTokenizer st = new StringTokenizer(br.readLine());
-		for (int i = 0; i < N; i++) {
+		for (int i = 0; i < arr.length; i++)
 			arr[i] = Integer.parseInt(st.nextToken());
-		}
 
 		Stack<Integer> S = new Stack<>();
-		for (int i = 0; i < N; i++) {
+		for (int i = arr.length - 1; i >= 0; i--) {
 			while (!S.empty() && arr[S.peek()] < arr[i]) {
-				NGE[S.pop()] = arr[i];
+				ans[S.peek()] = i + 1;
+				S.pop();
 			}
-			S.push(i);
+			S.add(i);
 		}
 
-		for (int x : NGE)
-			sb.append(x).append(' ');
-
+		for (int x : ans)
+			sb.append(x + " ");
 		System.out.println(sb);
 	}
 }

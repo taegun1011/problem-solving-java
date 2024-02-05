@@ -10,20 +10,6 @@ public class Main {
 	static int K;
 	static StringBuilder sb;
 
-	public static long prefix(int L, int R, int[] sumCount) {
-		long sum = (L == 0) ? K : 0;
-		System.out.println(L + " " + R);
-		for (int i = 1; i < N; i++) {
-
-			int head = L % i == 0 ? 1 : (L / i + 1) * i - L + 1;
-			int tail = (R - L + 1) - head;
-
-			sum += 1l * sumCount[i] * (tail / i + 1);
-		}
-
-		return sum;
-	}
-
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = new StringTokenizer(br.readLine());
@@ -31,12 +17,24 @@ public class Main {
 		N = Integer.parseInt(st.nextToken());
 		K = Integer.parseInt(st.nextToken());
 
-		int[] sumCount = new int[N];
+		int[] count = new int[N];
 		st = new StringTokenizer(br.readLine());
 		int i = 0;
 		while (i < K) {
 			i++;
-			sumCount[Integer.parseInt(st.nextToken())]++;
+			count[Integer.parseInt(st.nextToken())]++;
+		}
+
+		int[] res = new int[N];
+		for (i = 1; i < N; i++) {
+			for (int j = 0; j < N; j += i) {
+				res[j] += count[i];
+			}
+		}
+
+		long[] sum = new long[N + 1];
+		for (i = 1; i <= N; i++) {
+			sum[i] = sum[i - 1] + res[i - 1];
 		}
 
 		int Q = Integer.parseInt(br.readLine());
@@ -46,7 +44,7 @@ public class Main {
 			int L = Integer.parseInt(st.nextToken());
 			int R = Integer.parseInt(st.nextToken());
 
-			sb.append(prefix(L, R, sumCount)).append('\n');
+			sb.append(sum[R + 1] - sum[L]).append('\n');
 		}
 		System.out.println(sb);
 	}
