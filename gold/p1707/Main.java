@@ -3,9 +3,6 @@ package gold.p1707;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
-public class Main {
-	// 사이클이 없으면 되는듯?
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
