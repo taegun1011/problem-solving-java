@@ -26,22 +26,23 @@ public class Main {
 	static List<Integer>[] path;
 	static int[] key;
 	static Stack<Integer> Ans = new Stack<>();
+	static boolean[] visited;
 
-	static boolean DFS(int cur, int end, int left, Stack<Integer> S) {
+	static void DFS(int cur, int end, int left, Stack<Integer> S) {
+		if (!Ans.isEmpty())
+			return;
+
 		S.add(cur);
 
 		if (cur == end && left == 0) {
-			Ans.clear();
 			Ans.addAll(S);
-			return true;
+			return;
 		}
 
-		boolean flag = false;
 		for (int nxt : path[cur])
-			flag |= DFS(nxt, end, left - key[nxt], S);
+			if (!visited[nxt])
+				DFS(nxt, end, left - key[nxt], S);
 		S.pop();
-
-		return flag;
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -51,6 +52,7 @@ public class Main {
 		int M = Integer.parseInt(st.nextToken());
 
 		List<Pair>[] Edges = new List[N + 1];
+		visited = new boolean[N + 1];
 		for (int i = 1; i <= N; i++)
 			Edges[i] = new LinkedList<>();
 
@@ -60,7 +62,7 @@ public class Main {
 			int v = Integer.parseInt(st.nextToken());
 			int w = Integer.parseInt(st.nextToken());
 			Edges[u].add(new Pair(v, 0l + w));
-//			Edges[v].add(new Pair(u, w)); 양방향일 필요는 없다
+			Edges[v].add(new Pair(u, 0l + w));
 		}
 
 		key = new int[N + 1];
@@ -79,7 +81,7 @@ public class Main {
 		for (int i = 1; i <= N; i++)
 			path[i] = new ArrayList<>();
 
-		Arrays.fill(dist, -1);
+		Arrays.fill(dist, (int) 1e9);
 		pq.add(new Pair(1, (dist[1] = 0)));
 
 		while (!pq.isEmpty()) {
@@ -89,7 +91,7 @@ public class Main {
 				continue;
 
 			for (Pair nxt : Edges[cur.v]) {
-				if (dist[nxt.v] < 0 || dist[nxt.v] > dist[cur.v] + nxt.w) {
+				if (dist[nxt.v] > dist[cur.v] + nxt.w) {
 					dist[nxt.v] = dist[cur.v] + nxt.w;
 					pq.add(new Pair(nxt.v, dist[nxt.v]));
 
@@ -102,11 +104,11 @@ public class Main {
 			}
 		}
 
-		boolean flag = DFS(N, 1, total - key[N], new Stack<Integer>());
+		DFS(N, 1, total - key[N], new Stack<Integer>());
 
 		StringBuilder sb = new StringBuilder();
-		if (flag) {
-			sb.append(total).append('\n');
+		if (!Ans.isEmpty()) {
+			sb.append(Ans.size()).append('\n');
 			while (!Ans.empty()) {
 				sb.append(Ans.pop()).append(' ');
 			}
