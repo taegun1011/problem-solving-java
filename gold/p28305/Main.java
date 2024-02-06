@@ -19,5 +19,6 @@ public class Main {
 			arr[i] = Integer.parseInt(st.nextToken());
 
 		Arrays.sort(arr);
+
 	}
 }

@@ -1,4 +1,4 @@
-package silver.p16926;
+package gold.p16927;
 
 import java.io.BufferedReader;
 import java.io.IOException;
