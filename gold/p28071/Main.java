@@ -2,9 +2,11 @@ package gold.p28071;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class Main {
+
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = new StringTokenizer(br.readLine());
@@ -13,31 +15,31 @@ public class Main {
 		int K = Integer.parseInt(st.nextToken());
 
 		int[] arr = new int[N];
+
+		// dp[i] = i개 사탕을 사기 위해 필요한 상자의 최소 개수
+		int[] dp = new int[90001];
+		Arrays.fill(dp, (int) 1e9);
+		dp[0] = 0;
+
 		st = new StringTokenizer(br.readLine());
 		for (int i = 0; i < N; i++)
 			arr[i] = Integer.parseInt(st.nextToken());
 
-		// dp[i][j][k] : i번째 사탕까지, j개가 남았을 때, 나머지가 k, 최댓값
-		int[][][] dp = new int[N + 1][M + 1][K];
-//		for (int i = 0; i <= N; i++)
-//			for (int j = 0; j <= M; j++)
-//				Arrays.fill(dp[i][j], -1);
-//		dp[0][M][0] = 0;
-
-		// 4중 반복문...??
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j <= M; j++) {
-				for (int k = 0; k < K; k++) {
-					int temp = dp[i][M - j][k] + arr[i] * j;
-					dp[i + 1][M - j][temp % K] = Integer.max(dp[i + 1][M - j][temp % K], temp);
-				}
-			}
-		}
+		for (int i = 0; i < N; i++)
+			for (int j = arr[i]; j <= 90000; j++)
+				dp[j] = Integer.min(dp[j], dp[j - arr[i]] + 1);
 
 		int ans = 0;
-		for (int i = 0; i <= M; i++)
-			ans = Integer.max(ans, dp[N][i][0]);
+		for (int i = 90000; i >= 0; i--)
+			if (i % K == 0 && dp[i] <= M) {
+				ans = i;
+				break;
+			}
 
 		System.out.println(ans);
 	}
 }
+
+//BFS로 풀이가 가능하다
+//-> '90000'이라는 상태공간 안에서 모든 경우를 확인할 수 있다
+//-> dp 배열도 90000으로 설정할 수 있겠구나!
