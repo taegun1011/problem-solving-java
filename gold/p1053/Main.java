@@ -26,6 +26,8 @@ public class Main {
 		// 삭제
 		// 앞 바꾸기
 		// 가능하면 두개 옮기기
+
+		return 0;
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -38,7 +40,5 @@ public class Main {
 		// dp는 i번 위치에서 j번 연산을 했고 4번 연산 사용 여부가 k일 때의 최솟값
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		String str = br.readLine();
-
-		System.out.println(re_dp(0, 0, 0));
 	}
 }
