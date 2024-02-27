@@ -3,7 +3,6 @@ package gold.p24888;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,40 +18,70 @@ class Pair {
 		this.v = v;
 		this.w = w;
 	}
-
 }
 
 public class Main {
-	static List<Integer>[] path;
-	static int[] key;
-	static Stack<Integer> Ans = new Stack<>();
-	static boolean[] visited;
+//	static List<Integer>[] path;
+	static int[] note;
 
-	static void DFS(int cur, int end, int left, Stack<Integer> S) {
-		if (!Ans.isEmpty())
-			return;
+	static int N;
+	static int[] dp = new int[200001];
+	static int[] prev = new int[200001];
 
-		S.add(cur);
+	// dp도 여기서 하자
+	static void dijkstra(List<Pair>[] Edges) {
+		long[] dist = new long[N + 1];
 
-		if (cur == end && left == 0) {
-			Ans.addAll(S);
-			return;
+		Arrays.fill(dist, (long) 1e18);
+		Arrays.fill(dp, -1);
+
+		PriorityQueue<Pair> pq = new PriorityQueue<>((o1, o2) -> Long.compare(o1.w, o2.w));
+		pq.add(new Pair(1, (dist[1] = 0)));
+		dp[1] = note[1];
+
+		while (!pq.isEmpty()) {
+			Pair cur = pq.poll();
+
+			if (dist[cur.v] != cur.w)
+				continue;
+
+			for (Pair nxt : Edges[cur.v]) {
+				if (dist[nxt.v] >= dist[cur.v] + nxt.w) {
+					dist[nxt.v] = dist[cur.v] + nxt.w;
+					pq.add(new Pair(nxt.v, dist[nxt.v]));
+
+					if (dp[nxt.v] <= dp[cur.v] + note[nxt.v]) {
+						prev[nxt.v] = cur.v;
+						dp[nxt.v] = dp[cur.v] + note[nxt.v];
+					}
+				}
+
+			}
 		}
+	}
 
-		for (int nxt : path[cur])
-			if (!visited[nxt])
-				DFS(nxt, end, left - key[nxt], S);
-		S.pop();
+	static void construct() {
+		Stack<Integer> S = new Stack<>();
+		int cur = N;
+		while (cur != 1) {
+			S.add(cur);
+			cur = prev[cur];
+		}
+		S.add(1);
+		StringBuilder sb = new StringBuilder();
+		sb.append(S.size()).append('\n');
+		while (!S.isEmpty())
+			sb.append(S.pop() + " ");
+		System.out.println(sb);
 	}
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = new StringTokenizer(br.readLine());
-		int N = Integer.parseInt(st.nextToken());
+		N = Integer.parseInt(st.nextToken());
 		int M = Integer.parseInt(st.nextToken());
 
 		List<Pair>[] Edges = new List[N + 1];
-		visited = new boolean[N + 1];
 		for (int i = 1; i <= N; i++)
 			Edges[i] = new LinkedList<>();
 
@@ -65,56 +94,18 @@ public class Main {
 			Edges[v].add(new Pair(u, 0l + w));
 		}
 
-		key = new int[N + 1];
-		st = new StringTokenizer(br.readLine());
+		note = new int[N + 1];
+		String input = br.readLine();
 
 		int total = 0;
-		for (int i = 1; i <= N; i++) {
-			key[i] = Integer.parseInt(st.nextToken());
-			if (key[i] == 1)
-				total++;
-		}
-
-		PriorityQueue<Pair> pq = new PriorityQueue<>((o1, o2) -> Long.compare(o1.w, o2.w));
-		long[] dist = new long[N + 1];
-		path = new List[N + 1];
 		for (int i = 1; i <= N; i++)
-			path[i] = new ArrayList<>();
+			total += (note[i] = input.charAt(2 * (i - 1)) - '0');
 
-		Arrays.fill(dist, (int) 1e9);
-		pq.add(new Pair(1, (dist[1] = 0)));
+		dijkstra(Edges);
 
-		while (!pq.isEmpty()) {
-			Pair cur = pq.poll();
-
-			if (dist[cur.v] != cur.w)
-				continue;
-
-			for (Pair nxt : Edges[cur.v]) {
-				if (dist[nxt.v] > dist[cur.v] + nxt.w) {
-					dist[nxt.v] = dist[cur.v] + nxt.w;
-					pq.add(new Pair(nxt.v, dist[nxt.v]));
-
-					path[nxt.v].clear();
-					path[nxt.v].add(cur.v);
-				}
-
-				else if (dist[nxt.v] == dist[cur.v] + nxt.w)
-					path[nxt.v].add(cur.v);
-			}
-		}
-
-		DFS(N, 1, total - key[N], new Stack<Integer>());
-
-		StringBuilder sb = new StringBuilder();
-		if (!Ans.isEmpty()) {
-			sb.append(Ans.size()).append('\n');
-			while (!Ans.empty()) {
-				sb.append(Ans.pop()).append(' ');
-			}
-		} else
-			sb.append(-1);
-
-		System.out.println(sb);
+		if (dp[N] == total)
+			construct();
+		else
+			System.out.println(-1);
 	}
 }
