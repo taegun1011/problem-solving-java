@@ -2,7 +2,6 @@ package gold.p17144;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 public class Main {
@@ -32,8 +31,6 @@ public class Main {
 
 		map = new int[R][C];
 
-		ArrayList<Pair> AL = new ArrayList<>();
-
 		int u = 0, d = 0;
 		for (int i = 0; i < R; i++) {
 			st = new StringTokenizer(br.readLine());
@@ -44,13 +41,12 @@ public class Main {
 						u = i;
 						d = i + 1;
 					}
-				} else if (map[i][j] > 0)
-					AL.add(new Pair(i, j));
+				}
 			}
 		}
 
 		while (T-- > 0) {
-			AL = spread(AL);
+			spread();
 
 			move(u, d);
 		}
@@ -65,51 +61,80 @@ public class Main {
 	}
 
 	private static void move(int u, int d) {
-		int cr = u, cc = 0;
-		int nr = cr, nc = cc;
-		int last = 0;
-		while (cr != u || cc != 0) {
-			if (cr != 0 && cc != C - 1) {
-				cc++;
-			} else if (cr != 0 && cc == C - 1) {
-				cr--;
-			} else if (cr == 0 && cc != 0) {
-				cc--;
-			} else {
-				cr++;
-			}
+		int cr = u, cc = 1;
 
-			int temp = map[cr][cc];
-			map[cr][cc]
-		}
+		int last = 0;
+		// 위쪽
+		while (cc < C)
+			last = cover(cr, cc++, last);
+
+		cr--;
+		cc = C - 1;
+		while (cr >= 0)
+			last = cover(cr--, cc, last);
+
+		cr = 0;
+		cc = C - 2;
+		while (cc >= 0)
+			last = cover(cr, cc--, last);
+
+		cr = 1;
+		cc = 0;
+		while (cr < u)
+			last = cover(cr++, cc, last);
+
+		map[u][0] = -1;
+
+		// 아래쪽
+		cr = d;
+		cc = 1;
+
+		last = 0;
+		while (cc < C)
+			last = cover(cr, cc++, last);
+
+		cr++;
+		cc = C - 1;
+		while (cr < R)
+			last = cover(cr++, cc, last);
+
+		cr = R - 1;
+		cc--;
+		while (cc >= 0)
+			last = cover(cr, cc--, last);
+
+		cr--;
+		cc = 0;
+		while (cr > d)
+			last = cover(cr--, cc, last);
+
+		map[d][0] = -1;
 	}
 
-	private static ArrayList<Pair> spread(ArrayList<Pair> AL) {
+	private static int cover(int cr, int cc, int last) {
+		int temp = map[cr][cc];
+		map[cr][cc] = last;
+		return temp;
+	}
+
+	private static void spread() {
 		int[][] newMap = new int[R][C];
 
-		for (Pair p : AL) {
-			int cr = p.r, cc = p.c;
-			int amount = map[cr][cc] / 5;
-			for (int i = 0; i < 4; i++) {
-				int nr = cr + dir[i][0];
-				int nc = cc + dir[i][1];
-				if (nr < 0 || nr >= R || nc < 0 || nc >= C || map[nr][nc] == -1)
-					continue;
-				newMap[nr][nc] += amount;
-				map[cr][cc] -= amount;
+		for (int cr = 0; cr < R; cr++) {
+			for (int cc = 0; cc < C; cc++) {
+				int amount = map[cr][cc] / 5;
+				for (int i = 0; i < 4; i++) {
+					int nr = cr + dir[i][0];
+					int nc = cc + dir[i][1];
+					if (nr < 0 || nr >= R || nc < 0 || nc >= C || map[nr][nc] == -1)
+						continue;
+					newMap[nr][nc] += amount;
+					map[cr][cc] -= amount;
+				}
+				newMap[cr][cc] += map[cr][cc];
 			}
-			newMap[cr][cc] += map[cr][cc];
 		}
 
 		map = newMap;
-
-		ArrayList<Pair> newAL = new ArrayList<>();
-		for (int i = 0; i < R; i++) {
-			for (int j = 0; j < C; j++) {
-				if (map[i][j] > 0)
-					newAL.add(new Pair(i, j));
-			}
-		}
-		return newAL;
 	}
 }
